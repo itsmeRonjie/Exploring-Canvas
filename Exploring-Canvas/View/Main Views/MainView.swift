@@ -93,7 +93,34 @@ struct MainView: View {
                 circle,
                 with: .color(.blue)
             )
+            
+            drawNoisyLines(
+                context: context,
+                x0: dragLocation.x,
+                y0: dragLocation.y,
+                x1: actualX,
+                y1: actualY,
+                radius: radiusOfInfluence
+            )
         }
+    }
+    
+    func drawNoisyLines(
+        context: GraphicsContext,
+        x0: CGFloat,
+        y0: CGFloat,
+        x1: CGFloat,
+        y1: CGFloat,
+        radius: CGFloat
+    ) {
+        var path = Path()
+        
+        path.move(to: CGPoint(x: x0, y: y0))
+        path.addLine(to: CGPoint(x: x1, y: y1))
+        
+        context
+            .stroke(path, with: .color(.white.opacity(0.7)))
+    
     }
 }
 
