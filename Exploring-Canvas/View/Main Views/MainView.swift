@@ -11,9 +11,13 @@ struct MainView: View {
     let dots: [CGPoint]
     let n = 200
     let dotRadius = 2.5
+    let dragDotRadius = 5.0
     let radiusOfInfluence = 0.3
     
-    @State private var dragLocation: CGPoint = .zero
+    @State private var dragLocation: CGPoint = CGPoint(
+        x: CGFloat.random(in: 100...200),
+        y: CGFloat.random(in: 100...200)
+    )
     
     init() {
         self.dots = (0..<n).map { _ in
@@ -31,18 +35,14 @@ struct MainView: View {
             Canvas {
                 context,
                 size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
                 let circleRect = CGRect(
-                    x: center.x - dotRadius,
-                    y: center.y - dotRadius,
-                    width: dotRadius * 2,
-                    height: dotRadius * 2
+                    x: dragLocation.x - dragDotRadius,
+                    y: dragLocation.y - dragDotRadius,
+                    width: dragDotRadius * 2,
+                    height: dragDotRadius * 2
                 )
                 
-                context.fill(
-                    Path(ellipseIn: circleRect),
-                    with: .color(.blue)
-                )
+                let dragDot = Path(ellipseIn: circleRect)
                 
                 drawDotsAndLines(
                     context: context,
@@ -52,7 +52,18 @@ struct MainView: View {
                     dragLocation: dragLocation,
                     radiusOfInfluence: radiusOfInfluence
                 )
+                
+                context.fill(
+                    dragDot,
+                    with: .color(.red)
+                )
             }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        dragLocation = value.location
+                    }
+            )
         }
     }
     
