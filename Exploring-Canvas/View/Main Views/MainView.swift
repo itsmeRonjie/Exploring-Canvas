@@ -12,7 +12,7 @@ struct MainView: View {
     let n = 200
     let dotRadius = 2.5
     let dragDotRadius = 5.0
-    let radiusOfInfluence = 0.25
+    let radiusOfInfluence = 0.2
     
     @State private var dragLocation: CGPoint = CGPoint(
         x: CGFloat.random(in: 100...200),
@@ -79,7 +79,26 @@ struct MainView: View {
         for dot in dots {
             let actualX = dot.x * size.width
             let actualY = dot.y * size.height
-            let dim = dotRadius * 2
+            
+            let distance = distance(
+                x0: actualX,
+                y0: actualY,
+                x1: dragLocation.x,
+                y1: dragLocation.y
+            )
+            var dim = dotRadius * 2
+            
+            var color: GraphicsContext.Shading = .color(.blue)
+
+            if distance > radius {
+                let factor = radius / distance
+                dim *= factor
+            }
+            
+            if distance > 1.2 * radius {
+                color = .color(.green.opacity(0.7))
+            }
+            
             
             let circle = Path(
                 ellipseIn: CGRect(
@@ -92,7 +111,7 @@ struct MainView: View {
             
             context.fill(
                 circle,
-                with: .color(.blue)
+                with: color
             )
             
             drawNoisyLines(
