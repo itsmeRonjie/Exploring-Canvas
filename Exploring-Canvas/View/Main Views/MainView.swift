@@ -144,10 +144,39 @@ struct MainView: View {
             var path = Path()
             
             path.move(to: CGPoint(x: x0, y: y0))
-            path.addLine(to: CGPoint(x: x1, y: y1))
+            
+            let segments = 50
+            
+            for i in 1...segments {
+                let t = CGFloat(i) / CGFloat(segments)
+                let x = lerp(a: x0, b: x1, t: t)
+                let y = lerp(a: y0, b: y1, t: t)
+                
+                let k = noise(
+                    x: x / 5 + x0,
+                    y: y / 5 + y0
+                ) * 30
+                
+                let angle = noise(
+                    x: x + k,
+                    y: y + k
+                )
+                
+                let dist = sin(angle) * 0.5
+                path.addLine(
+                    to: CGPoint(
+                        x: x + k + dist,
+                        y: y + k + dist
+                    )
+                )
+            }
+            
+            let randomColor: Color = [
+                .blue, .green, .red, .yellow, .orange, .purple, .pink
+            ].randomElement() ?? .white
             
             context
-                .stroke(path, with: .color(.white.opacity(0.7)))
+                .stroke(path, with: .color(randomColor.opacity(0.7)))
         }
     }
     
@@ -161,6 +190,24 @@ struct MainView: View {
         let dy = y1 - y0
         
         return sqrt(dx * dx + dy * dy)
+    }
+    
+    func lerp(
+        a: CGFloat,
+        b: CGFloat,
+        t: CGFloat
+    ) -> CGFloat {
+        a + (b - a) * t
+    }
+    
+    func noise(
+        x: CGFloat,
+        y: CGFloat,
+        t: CGFloat = 101
+    ) -> CGFloat {
+        let w0 = 0.1 * sin(0.3 * x + 1.4 * t + 2.0 + 2.5 * sin(0.4 * y - 1.3 * t + 1.0))
+        let w1 = 0.1 * sin(0.2 * y + 1.5 * t + 2.8 + 2.3 * sin(0.5 * x - 1.2 * t + 0.5))
+        return w0 + w1
     }
 }
 
