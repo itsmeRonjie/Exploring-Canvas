@@ -13,6 +13,12 @@ struct MainView: View {
     let dotRadius = 2.5
     let dragDotRadius = 5.0
     let radiusOfInfluence = 0.2
+    let colors: [Color] = [
+        .blue, .green, .red,
+        .yellow, .orange, .purple,
+        .pink, .gray, .cyan,
+        .brown, .indigo, .mint
+    ]
     
     @State private var dragLocation: CGPoint = CGPoint(
         x: CGFloat.random(in: 100...200),
@@ -29,9 +35,17 @@ struct MainView: View {
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
-            
+            Text("Welcome to Canvas!")
+                .font(.largeTitle)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: colors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
             Canvas {
                 context,
                 size in
@@ -89,10 +103,10 @@ struct MainView: View {
             var dim = dotRadius * 2
             
             var color: GraphicsContext.Shading = .color(.blue)
-
+            
             if distance > radius {
                 let factor = radius / distance
-                dim *= factor
+                dim *= factor * factor
             }
             
             if distance > 1.2 * radius {
@@ -171,9 +185,7 @@ struct MainView: View {
                 )
             }
             
-            let randomColor: Color = [
-                .blue, .green, .red, .yellow, .orange, .purple, .pink
-            ].randomElement() ?? .white
+            let randomColor: Color = colors.randomElement() ?? .white
             
             context
                 .stroke(path, with: .color(randomColor.opacity(0.7)))
