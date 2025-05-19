@@ -12,7 +12,7 @@ struct MainView: View {
     let n = 200
     let dotRadius = 2.5
     let dragDotRadius = 5.0
-    let radiusOfInfluence = 0.3
+    let radiusOfInfluence = 0.25
     
     @State private var dragLocation: CGPoint = CGPoint(
         x: CGFloat.random(in: 100...200),
@@ -75,6 +75,7 @@ struct MainView: View {
         dragLocation: CGPoint,
         radiusOfInfluence: CGFloat
     ) {
+        let radius = radiusOfInfluence * min(size.width, size.height)
         for dot in dots {
             let actualX = dot.x * size.width
             let actualY = dot.y * size.height
@@ -100,7 +101,7 @@ struct MainView: View {
                 y0: dragLocation.y,
                 x1: actualX,
                 y1: actualY,
-                radius: radiusOfInfluence
+                radius: radius
             )
         }
     }
@@ -113,14 +114,34 @@ struct MainView: View {
         y1: CGFloat,
         radius: CGFloat
     ) {
-        var path = Path()
+        let dist = distance(
+            x0: x0,
+            y0: y0,
+            x1: x1,
+            y1: y1
+        )
         
-        path.move(to: CGPoint(x: x0, y: y0))
-        path.addLine(to: CGPoint(x: x1, y: y1))
-        
-        context
-            .stroke(path, with: .color(.white.opacity(0.7)))
+        if dist <= radius {
+            var path = Path()
+            
+            path.move(to: CGPoint(x: x0, y: y0))
+            path.addLine(to: CGPoint(x: x1, y: y1))
+            
+            context
+                .stroke(path, with: .color(.white.opacity(0.7)))
+        }
+    }
     
+    func distance(
+        x0: CGFloat,
+        y0: CGFloat,
+        x1: CGFloat,
+        y1: CGFloat
+    ) -> CGFloat {
+        let dx = x1 - x0
+        let dy = y1 - y0
+        
+        return sqrt(dx * dx + dy * dy)
     }
 }
 
